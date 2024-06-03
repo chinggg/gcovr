@@ -121,6 +121,33 @@ def write_summary_report(covdata: CovData, output_file: str, options: Options) -
             print_stat("calls", stats.call)
 
 
+def write_function_report(covdata: CovData, output_file: str, options: Options) -> None:
+    """Print a small report to the standard output.
+    Output the function name
+    """
+
+    with open_text_for_writing(output_file, "coverage.txt") as fh:
+        # Data
+        keys = sort_coverage(
+            covdata,
+            sort_key=options.sort_key,
+            sort_reverse=options.sort_reverse,
+            by_metric=options.txt_metric,
+        )
+        for key in keys:
+            funcov = covdata[key]
+            if options.functions_uncovered:
+                fh.write("Uncovered Functions of " + key + "\n")
+            else:
+                fh.write("Function Coverage of " + key + "\n")
+            for func in funcov.functions.values():
+                for lineno, excluded in func.excluded.items():
+                    if not excluded:
+                        if options.functions_uncovered and func.blocks[lineno] > 0.01:
+                            continue
+                        fh.write(f"  {func.name}: {func.blocks[lineno]:.2f}%\n")
+
+
 def _summarize_file_coverage(coverage: FileCoverage, options):
     filename = presentable_filename(coverage.filename, root_filter=options.root_filter)
 

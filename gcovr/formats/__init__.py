@@ -255,6 +255,12 @@ def write_reports(covdata: CovData, options: Options):
         except RuntimeError as e:
             writer_errors.append(str(e))
 
+    if options.functions or options.functions_uncovered:
+        try:
+            TxtHandler(options).write_function_report(covdata, "-")
+        except RuntimeError as e:
+            writer_errors.append(str(e))
+
     if writer_errors:
         errors_as_string = "\n".join(writer_errors)
         raise RuntimeError(

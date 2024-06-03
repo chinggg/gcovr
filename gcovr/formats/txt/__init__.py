@@ -96,6 +96,24 @@ class TxtHandler(BaseHandler):
                 ),
                 action="store_true",
             ),
+            GcovrConfigOption(
+                "functions",
+                ["--functions"],
+                group="output_options",
+                help=(
+                    "Print a small report to stdout "
+                    "with coverage rate for each function."
+                    "This is in addition to other reports. "
+                ),
+                action="store_true",
+            ),
+            GcovrConfigOption(
+                "functions_uncovered",
+                ["--functions_uncovered"],
+                config="functions-covered",
+                help="Similar to --functions but report only uncovered functions.",
+                action="store_true",
+            ),
         ]
 
     def write_report(self, covdata: CovData, output_file: str) -> None:
@@ -107,3 +125,8 @@ class TxtHandler(BaseHandler):
         from .write import write_summary_report
 
         write_summary_report(covdata, output_file, self.options)
+
+    def write_function_report(self, covdata: CovData, output_file: str) -> None:
+        from .write import write_function_report
+
+        write_function_report(covdata, output_file, self.options)
